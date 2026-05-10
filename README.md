@@ -1,8 +1,13 @@
-# KRICO Templates
+# KRICO: Templates
 
-**Reusable simulation templates for Antarctic krill larval connectivity modeling using Parcels and GLORYS12v1 ocean reanalysis.**
+Reusable simulation templates for Lagrangian particle tracking of Antarctic krill larval dispersal using Parcels and GLORYS12v1 ocean reanalysis. Complete workflow for 3D advection-diffusion simulations across CCAMLR Areas 48 and 88 (1994–2025).
 
-This repository provides a complete workflow for running Lagrangian particle tracking simulations to study Antarctic krill (*Euphausia superba*) larval dispersal and connectivity across spawning and recruitment habitats in the Southern Ocean.
+Author: Olivier Gourgue (RBINS)
+
+Related repositories:
+
+* __[krico-post-production](https://github.com/ogourgue/krico-post-production)__ — Post-processing and recruitment classification pipeline
+* __[krico-paper1](https://github.com/ogourgue/krico-paper1)__ — Paper 1 figure reproduction
 
 ## Repository Structure
 
@@ -112,5 +117,5 @@ GNU General Public License v3.0 — See LICENSE file
 
 ---
 
-**Maintainer**: Olivier Gourgue (ECOMOD, RBINS)  
+**Maintainer**: Olivier Gourgue (ECOMOD, RBINS)
 **Last updated**: May 2026
