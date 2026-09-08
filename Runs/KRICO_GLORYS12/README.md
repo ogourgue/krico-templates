@@ -106,8 +106,8 @@ If certain release dates crash, **only re-run those dates** with an alternative 
 
 **Real-world experience**: Some release dates cause crashes when particles evaluate velocity fields below the ocean bottom (depth interpolation error). This typically occurs with extreme forcing conditions. Solutions:
 
-- **`run_bis.py`**: Uses a different random seed for stochastic diffusion. Altered particle trajectories avoid problematic depth evaluations. Solves most crashes.
-- **`run_ter.py`**: Implements a depth threshold (5000 m) that removes particles exceeding this depth. These deep particles are scientifically unlikely to reach shelf zones and contribute to recruitment anyway, so removal is acceptable.
+- **`run_bis.py`**: Uses a different random seed for stochastic diffusion. Altered particle trajectories avoid problematic depth evaluations. Resolved 42 of the 261 affected release dates in the production run.
+- **`run_ter.py`**: Implements a depth threshold (5000 m) that removes particles exceeding this depth. These deep particles are scientifically unlikely to reach shelf zones and contribute to recruitment anyway, so removal is acceptable. Resolved the remaining 219 dates.
 
 **Important**: Only re-submit the specific failing dates, not the entire month. Copy `job.sh` rather than editing it, so each attempt leaves its own record:
 
