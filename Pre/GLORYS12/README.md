@@ -101,7 +101,7 @@ Requires internet access or ECMWF HPC network access.
 
 ## Notes
 
-- **Nov/Dec handling**: November and December are assigned to the *previous* spawning year (e.g., Nov/Dec 1993 → spawning year 1994). The scripts handle this automatically.
+- **Nov/Dec handling**: November and December belong to the *following* spawning year (e.g., Nov/Dec 1993 → spawning year 1994), matching `Runs/KRICO_GLORYS12/README.md`. `download_template.sh` applies this offset; the Python download scripts take a bare calendar YEAR and MONTH and do not.
 - **Smagorinsky coefficient**: `compute_kh.py` uses CS = 0.1 (hardcoded). Edit the script if you need a different value.
 - **Temporary files**: Daily download scripts create temporary day files, then concatenate into monthly files, then delete temporaries. Final output is one file per month.
 

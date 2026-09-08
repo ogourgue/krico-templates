@@ -15,10 +15,13 @@ The simulation pipeline:
 ```
 Runs/KRICO_GLORYS12/
 ├── README.md (this file)
-├── job_template.sh              # SLURM job script template
+├── job.sh                        # SLURM job script (edit YEAR/MONTH, then submit)
+├── job_bis.sh                    # Re-run script for dates that crashed with run.py
+├── job_ter.sh                    # Re-run script for dates that crashed with run_bis.py
 ├── run.py                        # Parcels simulation script (primary version)
 ├── run_bis.py                    # Alternative version (for problematic dates)
 ├── run_ter.py                    # Final version (for remaining problematic dates)
+├── run_variants.csv             # Which run script produced each release date
 └── zarr_to_netcdf.py            # Output conversion script
 ```
 
@@ -29,7 +32,7 @@ Runs/KRICO_GLORYS12/
 - **Domain**: Slope zone (1000–2000 m bathymetry)
 - **Density**: ~1.0 particle/km²
 - **Release depth**: 50–200 m (uniform)
-- **Release period**: 15th of month to 14th of next month (31 days × ~500k particles/day)
+- **Release period**: 15th of month to 14th of next month (31 days × ~546k particles/day)
 - **Tracking duration**: 200 days post-release
 - **Advection**: 3D RK4, 30-minute timestep, Milstein stochastic diffusion
 - **Behavior**: Passive tracers (no DVM, no mortality)
@@ -43,7 +46,7 @@ Particles record daily:
 - Sea ice concentration
 
 Output dimensions:
-- ~500,000 particles per release day
+- ~546,000 particles per release day
 - 200 daily observations per particle
 - ~1.6–1.7 GB per cohort (compressed NetCDF4)
 
@@ -106,17 +109,22 @@ If certain release dates crash, **only re-run those dates** with an alternative 
 - **`run_bis.py`**: Uses a different random seed for stochastic diffusion. Altered particle trajectories avoid problematic depth evaluations. Solves most crashes.
 - **`run_ter.py`**: Implements a depth threshold (5000 m) that removes particles exceeding this depth. These deep particles are scientifically unlikely to reach shelf zones and contribute to recruitment anyway, so removal is acceptable.
 
-**Important**: Only re-submit the specific failing dates, not the entire month. Modify `job.sh`:
+**Important**: Only re-submit the specific failing dates, not the entire month. Copy `job.sh` rather than editing it, so each attempt leaves its own record:
 
 ```bash
-# Edit job.sh to re-run only failed dates:
-# Change #SBATCH --array=1-31 to #SBATCH --array=5,8,12,25 (only failed dates)
-# Change python run.py to python run_bis.py
-vi job.sh
-sbatch job.sh
+cp job.sh job_bis.sh
+# In job_bis.sh:
+#   change #SBATCH --array=1-31 to #SBATCH --array=5,8,12,25 (only failed dates)
+#   change srun python run.py to srun python run_bis.py
+vi job_bis.sh
+sbatch job_bis.sh
 ```
 
-This keeps simulation costs manageable and avoids re-computing successful dates.
+Repeat as `job_ter.sh` for any dates still failing. This keeps simulation costs manageable and avoids re-computing successful dates.
+
+### Run-variant record
+
+`run_variants.csv` records which script produced each of the 3 848 release dates of the production run (spawning years 1994–2025): `release_date`, `spawning_year`, simulation `folder`, SLURM `array_task_id` and `script`. It was reconstructed from the `--array` directives of the job scripts in each simulation folder, which is possible only because each attempt was submitted from its own copy of the job script rather than by editing one in place.
 
 ## Output Conversion
 
@@ -143,10 +151,11 @@ python zarr_to_netcdf.py 1994_11_15
 ## Customization
 
 Edit `run.py` (or `run_bis.py`, `run_ter.py`):
-- Release depth: `release_depth = [50, 200]`
-- Tracking duration: `duration = 200` (days)
+- Release zone bathymetry: `1000 <= hdept[j, i] <= 2000`
+- Release depth: `np.random.uniform(50, 200, ...)` (hardcoded, no named constant)
+- Particle density: `PARTICLE_DENSITY` (particles per km², sets `n_points_per_cell`)
+- Tracking duration: `runtime_days = 200`
 - Time-stepping: `dt = 1800` (30 minutes)
-- Particle density: `n_particles_per_cell = 1.0`
 
 ## Notes
 
